@@ -3,12 +3,12 @@ function dxdt = myode_SMC(t,x)
 M = 1;
 m = 0.1;
 l = 0.5;
-m_hat = .1;
+m_hat = .01;
 g = 9.81;
 lambda = 10;
 eta = 0.1;
 Fd = 1;
-Fd_hat = 1;
+Fd_hat = 0.75;
 
 theta = x(1);
 theta_dot = x(2);
@@ -31,11 +31,11 @@ x_til_dotdot = f + xd_dd;
 s = lambda*x_til + x_til_dot;
 
 u_hat = -f_hat + xd_dd - lambda*x_til_dot;
-F = 3*abs(f);
+F = 1*abs(f);
 k = F+eta;
 
 f_d = ((M+m)*g*sin(xd)-m*l*xd_d^2*sin(xd)*cos(xd)+(M/m)*Fd*cos(xd))/((M+m)*l-m*l*cos(xd)^2);
-k_d = 3*abs(f_d);
+k_d = 1*abs(f_d);
 
 k_bar = k - k_d + lambda*phi;
 phi_dot = -lambda*phi + k_d;

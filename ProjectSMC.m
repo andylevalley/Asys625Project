@@ -1,12 +1,11 @@
-%% Input-State Linearization
-
+%% Sliding Mode Control
 clc
 clear all
 
 M = 1;
 m = 0.1;
 l = 0.5;
-m_hat = .1;
+m_hat = .01;
 g = 9.81;
 lambda = 10;
 eta = 0.1;

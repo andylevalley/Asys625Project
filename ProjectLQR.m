@@ -11,11 +11,11 @@ xd_d = cos(t);
 
 figure(1);
 plot(t,x(:,1)*180/pi,t,xd*180/pi)
-legend("beta");
+legend('beta');
 
 figure(3);
 plot(t,x(:,2))
-legend("betadot")
+legend('betadot')
 
 
 
