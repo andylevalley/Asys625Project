@@ -1,47 +1,54 @@
 function dxdt = myode_SMC(t,x)
 
-M = 1.0424;
-m = 0.231;
-l = 0.32;
-It = 0.03155;
-br = 0.00014;
-beq = 9.582;
-alpha = 0;
-parm = .1;
-alpha_hat = 0;
+M = 1;
+m = 0.1;
+l = 0.5;
+m_hat = .1;
+g = 9.81;
 lambda = 10;
-grav = 9.81;
-Fc = 0;
-% Fc=0.5*tanh(100*x(3));
+eta = 0.1;
+Fd = 1;
+Fd_hat = 1;
 
-% X = [x(1); x(2); x(3); x(4); x(5); x(6)];
+theta = x(1);
+theta_dot = x(2);
+phi = x(3);
 
-
-
-beta = x(2);
-beta_dot = x(4);
-pos = x(1);
-vel = x(3);
-eta = pos - (It/(m*l))*log((1+sin(beta))/(cos(beta)));
-eta_dot = vel - (It/(m*l*cos(beta)))*beta_dot;
-eta_dotdot = -(grav+(It*beta_dot^2)/(m*l*cos(beta)))*tan(beta)+(br*beta_dot)/(m*l*cos(beta));
+f = ((M+m)*g*sin(theta)-m*l*theta_dot^2*sin(theta)*cos(theta)+(M/m)*Fd*cos(theta))/((M+m)*l-m*l*cos(theta)^2);
+b = cos(theta)/((M+m)*l-m*l*cos(theta)^2);
+f_hat = ((M+m_hat)*g*sin(theta)-m_hat*l*theta_dot^2*sin(theta)*cos(theta)+(M/m)*Fd_hat*cos(theta))/((M+m_hat)*l-m_hat*l*cos(theta)^2);
+b_hat = cos(theta)/((M+m_hat)*l-m*l*cos(theta)^2);
 
 
-Msys = [M+m, -m*l*cos(x(2)-alpha); -m*l*cos(x(2)-alpha), It];
-C = [beq, m*l*sin(x(2)-alpha)*x(4); 0, br];
-D = [(M+m)*grav*sin(alpha); -m*grav*l*sin(x(2))]; 
-f = Msys\(-C*[x(3);x(4)]-D-[Fc;0]);
-g = Msys\[1;0];
+xd = sin(t);
+xd_d = cos(t);
+xd_dd = -sin(t);
 
-s = eta_dot + lambda*eta;
-k = 0.1;
-ueq = -eta_dotdot - lambda*eta_dot;
-u = ueq-k*sign(s);
+x_til = x(1) - xd;
+x_til_dot = x(2) - xd_d;
+x_til_dotdot = f + xd_dd;
 
+s = lambda*x_til + x_til_dot;
 
-dxdt = [vel
-        beta_dot
-        f(1) + g(1)*u
-        f(2) + g(2)*u];
+u_hat = -f_hat + xd_dd - lambda*x_til_dot;
+F = 3*abs(f);
+k = F+eta;
+
+f_d = ((M+m)*g*sin(xd)-m*l*xd_d^2*sin(xd)*cos(xd)+(M/m)*Fd*cos(xd))/((M+m)*l-m*l*cos(xd)^2);
+k_d = 3*abs(f_d);
+
+k_bar = k - k_d + lambda*phi;
+phi_dot = -lambda*phi + k_d;
+
+if abs(s) <= phi
+    u = b_hat^(-1)*(u_hat - k_bar*(s/phi));
+else
+    u = b_hat^(-1)*(u_hat - k_bar*sign(s));
+end
+
+dxdt = [theta_dot
+        f + b*u
+        phi_dot];
     
 end
+

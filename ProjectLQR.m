@@ -1,50 +1,47 @@
 clc
 clear all
 
-x0 = [0 10*pi/180 0 0];
-tspan = [0 30];
+x0 = [0.2 0];
+tspan = [0 15];
 
 [t,x] = ode45(@myode, tspan, x0);
 
-figure(1);
-plot(t,x(:,1))
-legend("position");
+xd = sin(t);
+xd_d = cos(t);
 
-figure(2);
-plot(t,x(:,3))
-legend("velocity")
+figure(1);
+plot(t,x(:,1)*180/pi,t,xd*180/pi)
+legend("beta");
 
 figure(3);
-plot(t,x(:,2)*180/pi)
-legend("beta")
+plot(t,x(:,2))
+legend("betadot")
 
 
 
 function [system] = myode(t,x)
 
-M = 1.0424;
-m = 0.231;
-l = 0.32;
-It = 0.03155;
-br = 0.00014;
-beq = 9.582;
-alpha = 10*pi/2;
+M = 1;
+m = 0.1;
+l = 0.5;
 g = 9.81;
+Fd = 1;
 
-gamma = (M+m)*It - m^2*l^2;
-A = (1/gamma).*[0 0 gamma 0; 0 0 0 gamma; 0 m^2*l^2*g -It*beq -m*l*br; 0 (M+m)*m*g*l -m*l*beq -(M+m)*br];
-B = (1/gamma).*[0;0;It;m*l];
-X = [x(1); x(2); x(3); x(4)];
+A = [0 1; -(M+m)*g/(M*l)+1/(m*l)*Fd 0];
+B = [0; 1/(M*l)];
 
-K = [-8.49, 48.46, -15.38, 9.67];
+K = [137.78 25.97];
 
-u = -K*X;
+xd = sin(t);
+xd_d = cos(t);
+x_til = x(1)-xd;
+x_til_dot = x(2)-xd_d;
+
+u = -K*[x_til; x_til_dot];
 
 
-system = A*X + B*u;
-dxdt = [x(3)
-        x(4)
-        system(3)
-        system(4)];
+system = A*[x(1);x(2)] + B*u;
+dxdt = [system(1)
+        system(2)];
 end
                 
