@@ -5,14 +5,13 @@ clear all
 M = 1;
 m = 0.1;
 l = 0.5;
-m_hat = .01;
 g = 9.81;
-lambda = 10;
+lambda = 30;
 eta = 0.1;
 phi = 0.1;
 
 
-x0 = [0.2 0 eta/lambda];
+x0 = [0 0 eta/lambda];
 tspan = [0 10];
 
 [t,x] = ode45(@myode_SMC, tspan, x0);

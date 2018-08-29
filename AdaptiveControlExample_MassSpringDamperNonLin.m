@@ -107,6 +107,7 @@ f1 = xdot*abs(xdot);
 f2 = x;
 f3 = x^3;
 xdesdotdot = r - alpha1*f1 - alpha2*f2 - alpha3*f3;
+
 xrdotdot = xdesdotdot-lambda0*edot;
 
 ahat1dot = -gamma*sigma*f1;
